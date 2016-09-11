@@ -266,9 +266,10 @@ gulp.task("includes", function () {
 
 
 //生成列表
-var pages = [];
+var pages;
 var hash = {};
 gulp.task("pagelist", function () {
+    pages = [];
     return gulp.src(config.SourceDir + "/**/*.{md,markdown}")
         .pipe($.replace(/^([\S\s]+?)[\r\n]+?---[\r\n]/m, function ($0, $1) {
             // console.log($1);
@@ -285,81 +286,39 @@ gulp.task("pagelist", function () {
 //生成文章静态页
 gulp.task("posts", function () {
     var post;
-    var pp = {};
+    pages.sort(function (a, b) {
+        return a.date - b.date;
+    });
     return gulp.src(config.SourceDir + "/**/*.{md,markdown}")
+        .pipe($.debug({ title: "unicorn:" }))
         .pipe($.replace(/^([\S\s]+?)[\r\n]+?---[\r\n]/m, function ($0, $1) {
             post = yaml($1);
-            //post.date = (post.date || new Date).getTime();
             post.title = post.title || post.date;
             post.subtitle = post.subtitle || "";
             post.url = post.date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-");
-
-            pp.next = "";
-            pp.nexturl = "";
-            pp.prev = "";
-            pp.prevurl = "";
-            pp.nextdis = "";
-            pp.prevdis = "";
-            console.log(pages);
+            post.subtitle;
             var index = hash[post.url];
-            if (pages.length == 1) {
-                pp.next = "没有了";
-                pp.nexturl = "#";
-                pp.nextdis = "disabled";
-                pp.prev = "没有了";
-                pp.prevurl = "#";
-                pp.prevdis = "disabled";
-                post.pp = pp;
-            }
 
-            if (index == pages.length - 1) {
-                pp.next = pages[index - 1].title;
-                pp.nexturl = pages[index - 1].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-") + ".html";
-                pp.nextdis = "";
-                pp.prev = "没有了";
-                pp.prevurl = "#";
-                pp.prevdis = "disabled";
-                post.pp = pp;
+            post.next = pages[index + 1];
+            post.prev = pages[index - 1];
 
-
-            } else if (index == 0) {
-                pp.next = "没有了";
-                pp.nexturl = "#";
-                pp.nextdis = "disabled";
-                pp.prev = pages[index + 1].title;
-                pp.prevurl = pages[index + 1].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-") + ".html";
-                pp.prevdis = "";
-                post.pp = pp;
-
+            if (typeof (post.next) == "undefined") {
+                post.next = {};
+                post.next.url = "#";
+                post.next.dis = "disabled";
             }
             else {
-
-                pp.prev = pages[index - 1].title;
-                pp.prevurl = pages[index - 1].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-") + ".html";
-                pp.next = pages[index + 1].title;
-                pp.nexturl = pages[index + 1].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-") + ".html";
-                post.pp = pp;
-
+                post.next.dis = "";
             }
+            if (typeof (post.prev) == "undefined") {
 
-
-
-            // var len = pages.length;
-            // var index = 0;
-            // for (var i = 0; i < len; i++) {
-            //     // 定位该元素位置
-            //     if (pages[i].title == post.title) {
-            //         index = i;
-            //     }
-            // }
-
-            // if (index == len - 1) {
-            //     post.next = "没有了";
-            //     post.nexturl = "#";
-            //     post.prev = pages[index - 1].title;
-            //     post.prevurl=pages[index - 1].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-")+".html";
-            // }
-
+                post.prev = {};
+                post.prev.url = "#";
+                post.prev.dis = "disabled";
+            }
+            else {
+                post.prev.dis = "";
+            }
             return "";
         }))
         .pipe($.replace(/<!--[ \t]*?more[ \t]*?-->/, "<a id=more></a>"))

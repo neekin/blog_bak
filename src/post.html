@@ -8,7 +8,7 @@
     <title>
         <%= title%> - 随趣IT - 趣味人生
     </title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <!--[if lt IE 9]>
       <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
@@ -44,8 +44,8 @@
                 <div class="col-md-12">
                     <nav>
                         <ul class="pager">
-                            <li class="previous <%= pp.prevdis %>"><a href="<%= pp.prevurl%>">&larr;下一篇</a></li>
-                            <li class="next <%= pp.nextdis %>"><a href="<%= pp.nexturl%>">  上一篇 &rarr;</a></li>
+                            <li class="previous <%= next.dis  %>"><a href= "<%= next.url%>.html">&larr;下一篇</a></li>
+                            <li class="next   <%= prev.dis %>"><a href= "<%= prev.url%>.html">  上一篇 &rarr;</a></li>
                         </ul>
                     </nav>
                 </div>
