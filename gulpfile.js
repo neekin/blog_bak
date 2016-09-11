@@ -471,7 +471,12 @@ gulp.task("publish", ["includes"], function () {
         var paginationhtml = "";
         var page = Math.ceil(newarticlelist.length / 5);
         for (var p = 1; p <= page; p++) {  //  <li><a ng-click="$parent.list = '/pagelist/list1.html'" href="#pagelist/list1.html">1</a></li>
+            if (page == 1) {
+                continue;
+            }
+
             paginationhtml += "  <li><a ng-click='$parent.list = \"/pagelist/list" + p + ".html\"' href='#pagelist/list" + p + ".html'>" + p + "</a></li>";
+
         }
         fs.writeFile(config.SourceDir + "/includes/pagination.html", paginationhtml);
 
@@ -486,6 +491,9 @@ gulp.task("publish", ["includes"], function () {
             }
             page = Math.ceil(categoriepages.length / 5);
             for (var p = 1; p <= page; p++) {  //  <li><a ng-click="$parent.list = '/pagelist/list1.html'" href="#pagelist/list1.html">1</a></li>
+                if (page == 1) {
+                    continue;
+                }
                 paginationhtml += "  <li><a ng-click='$parent.list = \"/pagelist/" + cat + "list" + p + ".html\"' href='#pagelist/" + cat + "list" + p + ".html'>" + p + "</a></li>";
             }
             fs.writeFile(config.SourceDir + "/includes/" + cat + "pagination.html", paginationhtml);
@@ -502,6 +510,9 @@ gulp.task("publish", ["includes"], function () {
             }
             page = Math.ceil(tagspages.length / 5);
             for (var p = 1; p <= page; p++) {  //  <li><a ng-click="$parent.list = '/pagelist/list1.html'" href="#pagelist/list1.html">1</a></li>
+                if (page == 1) {
+                    continue;
+                }
                 paginationhtml += "  <li><a ng-click='$parent.list = \"/pagelist/" + tag + "list" + p + ".html\"' href='#pagelist/" + tag + "list" + p + ".html'>" + p + "</a></li>";
             }
             fs.writeFile(config.SourceDir + "/includes/" + tag + "pagination.html", paginationhtml);
