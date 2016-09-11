@@ -1,0 +1,9 @@
+build
+production
+node_modules
+/src/_md2html
+/src/pagelist
+/src/includes
+/build
+/node_modules
+/production

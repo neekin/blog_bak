@@ -1,0 +1,144 @@
+@charset "utf-8";
+$body-color:#00bcd4;
+body{
+    background: #fff;
+}
+html,body {
+    height: 100%;
+}
+.wrapper{
+   position:relative;
+   min-height:100%;
+   _height:100%;
+}
+.main{
+  padding:0 0 120px;
+  zoom:1;
+}
+
+    .header{
+    background: $body-color;
+    height: 70px;
+    margin-bottom: 10px;
+ }
+
+
+.content-block{
+     box-shadow:  0 2px 5px 0 rgba(0, 0, 0, 0.16);
+      transition: box-shadow 0.5s ease;
+      margin-bottom: 20px;
+     &:hover{
+         box-shadow:  0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+     }
+.content-heading{
+   background: $body-color;
+   padding: 10px;
+    color:#fff;
+    .title{
+        display: inline-block;
+        small{
+            color:#fafafa;
+        }
+    }
+    .date{
+       display: block;
+       float: right;
+       line-height: 70px;
+       margin-right: 10px;
+    }
+}
+.content-body{
+    padding: 20px;
+}
+a{
+     text-decoration: none;
+}
+.content-footer{
+
+    padding: 10px;
+    text-align: right;
+}
+}
+
+.footer{
+    background: #ddd;
+    height: 120px;
+    line-height: 120px;
+    margin:-120px 0 0;
+    color:#fff;
+}
+
+.pager li a{
+    background-color:#fff;
+    color:$body-color;
+    border-color: $body-color;
+    transition: background-color 5 ease;
+    &:hover{
+           background-color: $body-color;
+           color:#fff;
+    }
+}
+.post{
+    .header{
+    background: $body-color;
+    height: 120px;
+    margin-bottom: 10px;
+    padding-top: 20px;
+    .logo{
+        a{
+            color:#fff;
+            text-decoration: none;
+        }
+        position: absolute;
+        font-size: 26px;
+    }
+ }
+ .content{
+    min-height: 650px;
+    background: #fafafa;
+    .img{
+      img{
+          width: 100%;
+      }
+     }
+    }
+} 
+
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover{
+    background-color: $body-color;
+    border-color:$body-color;
+}
+.pagination>li>a, .pagination>li>span{
+    color:$body-color;
+}
+.pagination>li>a:hover, .pagination>li>a:focus{
+     background-color: $body-color;
+     border-color: $body-color;
+     color: #fff;
+}
+.logo{
+    margin: 0;
+    line-height: 70px;
+    color:#fff;
+    padding-left: 20px;
+}
+.tags {
+    color:$body-color;
+   line-height: 1.6em;
+   span{
+       padding: 4px;
+   }
+  .s { font-size: 0.8em; }
+  .m { font-size: 1.2em; }
+  .l { font-size: 1.8em; }
+}
+
+.title{
+    margin: 0;
+    color:#fff;
+}
+.ds-powered-by{
+   a{
+       display: none;
+   }
+}
