@@ -120,7 +120,7 @@ gulp.task("images", function () {
 
 
 //用于生产环境
-gulp.task("deploy", ["clean","dev", "delDeploymentDir"], function () {
+gulp.task("deploy", ["clean", "dev", "delDeploymentDir"], function () {
     return sequence(["imgmin"], ["cssmin"], ["jsmin"], ["htmlmin"]);
 });
 gulp.task("delDeploymentDir", function (cb) {
@@ -312,7 +312,7 @@ gulp.task("posts", function () {
                 post.pp = pp;
             }
 
-            else if (index == pages.length - 1) {
+            if (index == pages.length - 1) {
                 pp.next = pages[index - 1].title;
                 pp.nexturl = pages[index - 1].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-") + ".html";
                 pp.nextdis = "";
