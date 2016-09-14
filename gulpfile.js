@@ -272,6 +272,7 @@ gulp.task("pagelist", function () {
     pages = [];
     return gulp.src(config.SourceDir + "/**/*.{md,markdown}")
         .pipe($.replace(/^([\S\s]+?)[\r\n]+?---[\r\n]/m, function ($0, $1) {
+
             // console.log($1);
             var post = yaml($1);
             post.url = post.date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-");
@@ -287,8 +288,9 @@ gulp.task("pagelist", function () {
 gulp.task("posts", function () {
     var post;
     pages.sort(function (a, b) {
-        return a.date - b.date;
+        return  a.date -b.date ;
     });
+    console.log(pages);
     return gulp.src(config.SourceDir + "/**/*.{md,markdown}")
         .pipe($.debug({ title: "unicorn:" }))
         .pipe($.replace(/^([\S\s]+?)[\r\n]+?---[\r\n]/m, function ($0, $1) {
@@ -298,10 +300,8 @@ gulp.task("posts", function () {
             post.url = post.date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-");
             post.subtitle;
             var index = hash[post.url];
-
             post.next = pages[index + 1];
             post.prev = pages[index - 1];
-
             if (typeof (post.next) == "undefined") {
                 post.next = {};
                 post.next.url = "#";
@@ -447,7 +447,7 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
                     for (var k = 0; k < result[i][j].tags.length; k++) {
                         tagsinfo += "<span class='label label-info'>" + result[i][j].tags[k] + "</span>";
                     }
-                    console.log(tagsinfo);
+                    // console.log(tagsinfo);
                     pagelisthtml += " <div class='content-block'> \
                             <div class='content-heading'>   \
                                 <h2 class='title'>"+ result[i][j].title + "<small>" + result[i][j].subtitle + "</small></h2> \
