@@ -56,7 +56,16 @@ a{
 .content-footer{
 
     padding: 10px;
-    text-align: right;
+   // text-align: right;
+   .label{
+       margin-left: 10px;
+   }
+   .read{
+       float: right;
+   }
+}
+.clear{
+    clear: both;
 }
 }
 

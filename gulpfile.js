@@ -215,7 +215,7 @@ gulp.task("base64", function () {
 
 
 
-//静态博客任务  创建新文章
+// 创建新文章
 gulp.task("new", function () {
     //var reg=/^[\u4e00-\u9fa5]+$/;
     //  var title  = "";
@@ -357,8 +357,13 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
             result.push(pages.slice(i, i + 5));
         }
         var page = 1;
+        //正统分页
         for (var i = 0; i < result.length; i++) {
             for (var j = 0; j < result[i].length; j++) {
+                var tagsinfo = "";
+                for (var k = 0; k < result[i][j].tags.length; k++) {
+                    tagsinfo += "<span class='label label-info'>" + result[i][j].tags[k] + "</span>";
+                }
                 var url = result[i][j].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-");
                 pagelisthtml += " <div class='content-block'> \
                         <div class='content-heading'>   \
@@ -368,9 +373,8 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
                         <div class='content-body'>  \
                             <p>"+ result[i][j].outline + "</p> \
                         </div> \
-                        <div class='content-footer'> \
-                            <a href='/posts/"+ url + ".html' class='read'>阅读全文</a> \
-                          </div> </div>";
+                        <div class='content-footer'> "+ tagsinfo + "<a href='/posts/" + url + ".html' class='read'>阅读全文</a> <div class='clear'></div> \
+                            </div> </div>";
             }
             fs.writeFile(config.SourceDir + "/pagelist/list" + page + ".html", pagelisthtml);
             pagelisthtml = "";
@@ -391,8 +395,13 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
             for (var i = 0, len = tagpages.length; i < len; i += 5) {
                 result.push(tagpages.slice(i, i + 5));
             }
+            //根据标签分页
             for (var i = 0; i < result.length; i++) {
                 for (var j = 0; j < result[i].length; j++) {
+                    var tagsinfo = "";
+                    for (var k = 0; k < result[i][j].tags.length; k++) {
+                        tagsinfo += "<span class='label label-info'>" + result[i][j].tags[k] + "</span>";
+                    }
                     var url = result[i][j].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-");
                     pagelisthtml += " <div class='content-block'> \
                             <div class='content-heading'>   \
@@ -402,8 +411,7 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
                             <div class='content-body'>  \
                                 <p>"+ result[i][j].outline + "</p> \
                             </div> \
-                            <div class='content-footer'> \
-                                <a href='/posts/"+ url + ".html' class='read'>阅读全文</a> \
+                           <div class='content-footer'> "+ tagsinfo + "<a href='/posts/" + url + ".html' class='read'>阅读全文</a> <div class='clear'></div> \
                             </div> </div>";
                 }
                 fs.writeFile(config.SourceDir + "/pagelist/" + tag + "list" + page + ".html", pagelisthtml);
@@ -430,9 +438,16 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
             for (var i = 0, len = categoriepages.length; i < len; i += 5) {
                 result.push(categoriepages.slice(i, i + 5));
             }
+            //根据频道分页
             for (var i = 0; i < result.length; i++) {
                 for (var j = 0; j < result[i].length; j++) {
                     var url = result[i][j].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-");
+                    // <span class="label label-info">人生感想</span><span class="label label-info">Info</span>
+                    var tagsinfo = "";
+                    for (var k = 0; k < result[i][j].tags.length; k++) {
+                        tagsinfo += "<span class='label label-info'>" + result[i][j].tags[k] + "</span>";
+                    }
+                    console.log(tagsinfo);
                     pagelisthtml += " <div class='content-block'> \
                             <div class='content-heading'>   \
                                 <h2 class='title'>"+ result[i][j].title + "<small>" + result[i][j].subtitle + "</small></h2> \
@@ -441,8 +456,7 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
                             <div class='content-body'>  \
                                 <p>"+ result[i][j].outline + "</p> \
                             </div> \
-                            <div class='content-footer'> \
-                                <a href='/posts/"+ url + ".html' class='read'>阅读全文</a> \
+                            <div class='content-footer'> "+ tagsinfo + "<a href='/posts/" + url + ".html' class='read'>阅读全文</a> <div class='clear'></div> \
                             </div> </div>";
                 }
                 fs.writeFile(config.SourceDir + "/pagelist/" + cat + "list" + page + ".html", pagelisthtml);
