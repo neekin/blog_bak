@@ -120,7 +120,7 @@ gulp.task("images", function () {
 
 
 //用于生产环境
-gulp.task("deploy", ["clean", "dev", "delDeploymentDir"], function () {
+gulp.task("deploy", ["delDeploymentDir"], function () {
     return sequence(["imgmin"], ["cssmin"], ["jsmin"], ["htmlmin"]);
 });
 gulp.task("delDeploymentDir", function (cb) {
