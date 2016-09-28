@@ -11,7 +11,9 @@
       <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+   <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/main.css">
+    
 </head>
 
 <body class="index" ng-app ng-init="[list='pagelist/list1.html' ,pagination='includes/pagination.html']">
@@ -88,7 +90,45 @@
         </div>
     </div>
     <footer class="footer text-center">
-        版权所有&copy;NeeKin By 2016
+       
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 col-md-offset-2">
+                    <div class="social">
+                    <h3>社交账号</h3>
+                    <div class="social-icon github">
+                        <a href="https://github.com/njgzs" target="_blank" title='记得给我star哦'>
+                           <i class="fa fa-github fa-3"></i>
+                        </a>
+                    </div>
+                    <!--<div class=" social-icon weibo">
+                        <a href="" title="新浪微博">
+                            <i class="fa  fa-3 fa-weibo" aria-hidden="true"></i>
+                        </a>
+                    </div>-->
+                    <div class="social-icon weixin">
+                        <a href="" title="微信二维码">
+                            <i class="fa fa-3 fa-weixin" aria-hidden="true"></i>
+                        </a>
+                        <div class="qrcode">
+                            <img src="/images/qrcode.png" alt="微信二维码">
+                        </div>
+                    </div>
+                     </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="friendslink">
+                     <h4>友情链接</h4>
+                     <div class="links">
+                         <a class="social-link" href="http://ncitycode.com/" target="_blank" title="北城的技术博客">北城的技术博客</a>
+                     </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="copy">
+              版权所有&copy;NeeKin By 2016
+        </div>
         <script>
             var _hmt = _hmt || [];
             (function() {
@@ -98,7 +138,6 @@
                 s.parentNode.insertBefore(hm, s);
             })();
         </script>
-
     </footer>
 </body>
 <script src="js/angular.js"></script>

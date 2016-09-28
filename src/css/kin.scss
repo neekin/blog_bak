@@ -72,9 +72,66 @@ a{
 .footer{
     background: #ddd;
     height: 120px;
-    line-height: 120px;
+    // line-height: 120px;
     margin:-120px 0 0;
     color:#fff;
+    a{
+        text-decoration: none;
+    }
+    a:hover{
+         color: $body-color;
+    }
+    .social{
+        h3{
+             text-align: left;
+        }
+        text-align: left;
+        .social-icon{
+            display: inline-block;
+            margin-left:10px;
+            font-size: 28px;
+        }
+        .weixin{
+            position: relative;
+            &:hover{
+                .qrcode{
+                    display: block;
+                }
+            }
+        }
+        .qrcode{
+            height: 400px;
+            width: 400px;
+            background: #0094ff;
+            position: absolute;
+            top:-420px;
+            z-index: 9999;
+            left:-200px;
+            display: none;
+            img{
+             height: 100%;
+             width: 100%;   
+            }
+        }
+        
+    }
+    .links{
+        text-align: left;
+    }
+    .friendslink
+    {
+        h4{
+            text-align: left;
+        }
+    .social-link{
+        font-size: 16px;
+        padding-right: 10px;
+       }
+    }
+
+    .copy{
+        text-align: center;
+    }
 }
 
 .pager li a{
