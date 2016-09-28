@@ -151,7 +151,7 @@ gulp.task("cssmin", function () {
 gulp.task("htmlmin", function () {
     return gulp.src(config.CompileDir + "/**/*.{html,json}")
         .pipe($.revCollector({ replaceReved: true }))
-        .pipe($.htmlmin({ collapseWhitespace: true }))
+        .pipe($.htmlmin({ collapseWhitespace: true,removeComments:true }))
         .pipe(gulp.dest(config.DeploymentDir));
 });
 
@@ -159,7 +159,7 @@ gulp.task("htmlmin", function () {
 //压缩图片
 gulp.task("imgmin", function () {
     return gulp.src(config.CompileDir + "/**/*.{png,jpg,gif,svg}")
-        //  .pipe($.imagemin({})) //开发环境用起来太慢 打包生产环境时使用
+        .pipe($.imagemin({})) //开发环境用起来太慢 打包生产环境时使用
         .pipe($.rev())
         .pipe(gulp.dest(config.DeploymentDir))
         .pipe($.rev.manifest())
