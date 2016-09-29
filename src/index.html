@@ -33,26 +33,33 @@
                         <div class="content-heading text-center">
                             <h4 class="title ">栏目</h4>
                         </div>
-                        <div class="content-body" ng-include="'includes/categories.html'">
+                        <!--ng-include="'includes/categories.html'"-->
+                        <div class="content-body" >
+                        @@include('_includes/categories.html')
                         </div>
                     </div>
                     <div class="content-block">
                         <div class="content-heading text-center">
                             <h4 class="title ">最新文章</h4>
                         </div>
-                        <div class="content-body" ng-include="'includes/newarticlelist.html'">
+                        <!--ng-include="'includes/newarticlelist.html'"-->
+                        <div class="content-body" >
+                         @@include('_includes/newarticlelist.html')
                         </div>
                     </div>
                     <div class="content-block">
                         <div class="content-heading text-center">
                             <h4 class="title">标签云</h4>
                         </div>
-                        <div class="content-body tags" ng-include="'includes/tags.html'">
-
+                        <!--ng-include="'includes/tags.html'"-->
+                        <div class="content-body tags" >
+                          @@include('_includes/tags.html')
                         </div>
                     </div>
                 </div>
-                <div class="content-list col-md-8 col-sm-12 col-xs-12" ng-include src="list">
+                <!--ng-include src="list"-->
+                <div class="content-list col-md-8 col-sm-12 col-xs-12" >
+                    @@include('_includes/postlist.html')
                     <!--<div class='content-block'>
                         <div class='content-heading'>
                             <h2 class='title'>下次再见时<small>给我个拥抱</small></h2>

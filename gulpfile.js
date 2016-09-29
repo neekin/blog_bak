@@ -19,7 +19,7 @@ gulp.task("default", ["dev"], function (cb) {
 });
 
 gulp.task("clean", function () {
-    return del([config.SourceDir + "/_md2html/*.*", config.SourceDir + "/includes/*.*", config.SourceDir + "/pagelist/*.*", config.SourceDir + "posts/*.*"]);
+    return del([config.CompileDir,config.DeploymentDir,config.SourceDir + "/_md2html/*.*", config.SourceDir + "/includes/*.*", config.SourceDir + "/pagelist/*.*", config.SourceDir + "posts/*.*"]);
 });
 gulp.task("serve", function () {
     return browserSync.init({
@@ -32,7 +32,7 @@ gulp.task("serve", function () {
 });
 
 gulp.task("dev", ["delCompileDir", "publishpagelist"], function (cb) {
-    return sequence("html", "pug", "sass", "js", "images", "jsx", "extend", cb);
+    return sequence("html", "pug","fileinclude", "sass", "js", "images", "jsx", "extend", cb);
 });
 
 gulp.task("delCompileDir", function (cb) {
@@ -207,10 +207,15 @@ gulp.task("sprite", ["deploy"], function () {
         .pipe(gulp.dest("."));
 });
 
-//base64
+//gulp include
 
-gulp.task("base64", function () {
-
+gulp.task("fileinclude", function () {
+    gulp.src(config.SourceDir +"/**/*.html")
+        .pipe($.fileInclude({
+            prefix: '@@',
+            basepath: '@file'
+        }))
+        .pipe(gulp.dest(config.CompileDir));
 });
 
 
@@ -290,7 +295,7 @@ gulp.task("posts", function () {
     pages.sort(function (a, b) {
         return  a.date -b.date ;
     });
-    console.log(pages);
+   // console.log(pages);
     return gulp.src(config.SourceDir + "/**/*.{md,markdown}")
         .pipe($.debug({ title: "unicorn:" }))
         .pipe($.replace(/^([\S\s]+?)[\r\n]+?---[\r\n]/m, function ($0, $1) {
@@ -302,6 +307,7 @@ gulp.task("posts", function () {
             var index = hash[post.url];
             post.next = pages[index + 1];
             post.prev = pages[index - 1];
+           
             if (typeof (post.next) == "undefined") {
                 post.next = {};
                 post.next.url = "#";
@@ -319,6 +325,7 @@ gulp.task("posts", function () {
             else {
                 post.prev.dis = "";
             }
+             console.log(post);
             return "";
         }))
         .pipe($.replace(/<!--[ \t]*?more[ \t]*?-->/, "<a id=more></a>"))
@@ -357,6 +364,7 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
             result.push(pages.slice(i, i + 5));
         }
         var page = 1;
+        var pagelist =[];
         //正统分页
         for (var i = 0; i < result.length; i++) {
             for (var j = 0; j < result[i].length; j++) {
@@ -364,19 +372,17 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
                 for (var k = 0; k < result[i][j].tags.length; k++) {
                     tagsinfo += "<span class='label label-info'>" + result[i][j].tags[k] + "</span>";
                 }
-                var url = result[i][j].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-");
-                pagelisthtml += " <div class='content-block'> \
-                        <div class='content-heading'>   \
-                            <h2 class='title'>"+ result[i][j].title + "<small>" + result[i][j].subtitle + "</small></h2> \
-                            <div class='date'>"+ moment(result[i][j].date).utc().format("YYYY-MM-DD") + "</div>  \
-                        </div>  \
-                        <div class='content-body'>  \
-                            <p>"+ result[i][j].outline + "</p> \
-                        </div> \
-                        <div class='content-footer'> "+ tagsinfo + "<a href='/posts/" + url + ".html' class='read'>阅读全文</a> <div class='clear'></div> \
-                            </div> </div>";
+                var url ="/posts/"+ result[i][j].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-")+".html";
+                               pagelist.push({
+                                   url:  url  ,
+                                   tags:tagsinfo,
+                                   title:result[i][j].title,
+                                   small:result[i][j].subtitle,
+                                   date:moment(result[i][j].date).utc().format("YYYY-MM-DD"),
+                                   outline: result[i][j].outline });
             }
-            fs.writeFile(config.SourceDir + "/pagelist/list" + page + ".html", pagelisthtml);
+            fs.writeFile(config.SourceDir + "/_includes/list.json", JSON.stringify(pagelist));
+           // fs.writeFile(config.SourceDir + "/pagelist/list" + page + ".html", pagelisthtml);
             pagelisthtml = "";
             page++;
         }
@@ -472,25 +478,20 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
 gulp.task("publish", ["includes"], function () {
 
     return fs.mkdir(config.SourceDir + "/includes", function () {
-        //生成栏目
-        var categoriehtml = "";
-        for (var s in categorie) {
-            categoriehtml += "<p><a href=#" + s + " ng-click='[$parent.list=\"/pagelist/" + s + "list1.html\",$parent.pagination=\"includes/" + s + "pagination.html\"]'>" + s + "<span  class='badge'>" + categorie[s] + "</span>" + "</a></p>";
-        }
-        newarticlelist.sort(function (a, b) {
-            return b.date - a.date;
-        });
+
+       // JSON.stringify
 
         //生成分页按钮
         var paginationhtml = "";
+        var pageinations=[];
         var page = Math.ceil(newarticlelist.length / 5);
         for (var p = 1; p <= page; p++) {  //  <li><a ng-click="$parent.list = '/pagelist/list1.html'" href="#pagelist/list1.html">1</a></li>
             if (page == 1) {
                 continue;
             }
-
-            paginationhtml += "  <li><a ng-click='$parent.list = \"/pagelist/list" + p + ".html\"' href='#pagelist/list" + p + ".html'>" + p + "</a></li>";
-
+            pageinations.unshift({page:p});
+            paginationhtml += "  <li><a ng-click='list = \"/pagelist/list" + p + ".html\"' href='#pagelist/list" + p + ".html'>" + p + "</a></li>";
+            
         }
         fs.writeFile(config.SourceDir + "/includes/pagination.html", paginationhtml);
 
@@ -508,7 +509,7 @@ gulp.task("publish", ["includes"], function () {
                 if (page == 1) {
                     continue;
                 }
-                paginationhtml += "  <li><a ng-click='$parent.list = \"/pagelist/" + cat + "list" + p + ".html\"' href='#pagelist/" + cat + "list" + p + ".html'>" + p + "</a></li>";
+                paginationhtml += "  <li><a ng-click='list = \"/pagelist/" + cat + "list" + p + ".html\"' href='#pagelist/" + cat + "list" + p + ".html'>" + p + "</a></li>";
             }
             fs.writeFile(config.SourceDir + "/includes/" + cat + "pagination.html", paginationhtml);
             categoriepages.length = 0;
@@ -527,29 +528,44 @@ gulp.task("publish", ["includes"], function () {
                 if (page == 1) {
                     continue;
                 }
-                paginationhtml += "  <li><a ng-click='$parent.list = \"/pagelist/" + tag + "list" + p + ".html\"' href='#pagelist/" + tag + "list" + p + ".html'>" + p + "</a></li>";
+                paginationhtml += "  <li><a ng-click='list = \"/pagelist/" + tag + "list" + p + ".html\"' href='#pagelist/" + tag + "list" + p + ".html'>" + p + "</a></li>";
             }
             fs.writeFile(config.SourceDir + "/includes/" + tag + "pagination.html", paginationhtml);
             tagspages.length = 0;
         }
 
+       //生成栏目
+       // var categoriehtml = "";
+        var cats= [];
+        for (var s in categorie) {
+            var cat ={catname : s,postcount:categorie[s]};
+            cats.unshift(cat);
+           // categoriehtml += "<p><a href=#" + s + " ng-click='[list=\"/pagelist/" + s + "list1.html\",pagination=\"includes/" + s + "pagination.html\"]'>" + s + "<span  class='badge'>" + categorie[s] + "</span>" + "</a></p>";
+        }
+        newarticlelist.sort(function (a, b) {
+            return b.date - a.date;
+        });
+
         //生成最新文章链接
         newarticlelist.length = 10;
-        // console.log("---------OK-------");
-        // console.log(newarticlelist);
         var newarticlelisthtml = "";
+        var news =[];
         for (var o in newarticlelist) {
-            newarticlelisthtml += "<p><a href='/posts/" + newarticlelist[o].url + "'>" + newarticlelist[o].title + "</a></p>";
+            news.unshift({url:"/posts/" + newarticlelist[o].url,title:newarticlelist[o].title,date:newarticlelist[o].date});
         }
+        news.sort(function (a, b) {
+            return b.date - a.date;
+        });
 
         //生成标签云
         var tagshtml = "";
+        var tagjson = [];
         for (var tag in tags) {
             var index = Math.floor((Math.random() * "sml".length));
-            tagshtml += "<span class='" + "sml"[index] + "'><a href=#" + tag + " ng-click='[$parent.list=\"/pagelist/" + tag + "list1.html\",$parent.pagination=\"includes/" + tag + "pagination.html\"]'>" + tag + "</a></span>";
+            tagjson.unshift({index:index,tag:tag});
         }
-        fs.writeFile(config.SourceDir + "/includes/categories.html", categoriehtml);
-        fs.writeFile(config.SourceDir + "/includes/newarticlelist.html", newarticlelisthtml);
-        fs.writeFile(config.SourceDir + "/includes/tags.html", tagshtml);
+        fs.writeFile(config.SourceDir+"/_includes/categories.json", JSON.stringify(cats));
+        fs.writeFile(config.SourceDir + "/_includes/newarticlelist.json", JSON.stringify(news));
+        fs.writeFile(config.SourceDir + "/_includes/tags.json", JSON.stringify(tagjson));
     });
 });
