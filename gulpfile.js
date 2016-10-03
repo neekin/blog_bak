@@ -8,18 +8,22 @@ var sequence = require("run-sequence");
 var fs = require("fs");
 var moment = require("moment");
 var highlight = require("highlight.js").highlightAuto;
+var markdown = require("markdown");
 var config = {
     CompileDir: "build", //开发编译目录
     SourceDir: "src", //源码目录
     DeploymentDir: "production" //编译到生产目录
 };
+var path = require("path");
+
+
 //默认开发模式
 gulp.task("default", ["dev"], function (cb) {
     return sequence(["serve", "watch"], cb);
 });
 
 gulp.task("clean", function () {
-    return del([config.CompileDir,config.DeploymentDir,config.SourceDir + "/_md2html/*.*", config.SourceDir + "/includes/*.*", config.SourceDir + "/pagelist/*.*", config.SourceDir + "posts/*.*"]);
+    return del([config.CompileDir, config.DeploymentDir, config.SourceDir + "/_md2html/*.*", config.SourceDir + "/includes/*.*", config.SourceDir + "/pagelist/*.*", config.SourceDir + "posts/*.*"]);
 });
 gulp.task("serve", function () {
     return browserSync.init({
@@ -32,8 +36,10 @@ gulp.task("serve", function () {
 });
 
 gulp.task("dev", ["delCompileDir", "publishpagelist"], function (cb) {
-    return sequence("html", "pug","fileinclude", "sass", "js", "images", "jsx", "extend", cb);
+    return sequence("html", "pug", "fileinclude", "sass", "js", "images", "jsx", "extend", cb);
 });
+
+
 
 gulp.task("delCompileDir", function (cb) {
     return del([config.CompileDir], cb);
@@ -56,7 +62,9 @@ gulp.task("watch", function () {
 gulp.task("pug", function () {
     return gulp.src([config.SourceDir + "/**/*.{jade,pug}", "!" + config.SourceDir + "/_**/*.*"])
         .pipe($.plumber())
-        .pipe($.changed(config.CompileDir, { extension: ".html" }))
+        .pipe($.changed(config.CompileDir, {
+            extension: ".html"
+        }))
         .pipe($.pug({
             pretty: true
         }))
@@ -74,7 +82,9 @@ gulp.task("html", function () {
 //compile sass
 gulp.task("sass", function () {
     return gulp.src([config.SourceDir + "/**/*.{css,scss}", "!" + config.SourceDir + "/_**/_*.*"])
-        .pipe($.changed(config.CompileDir, { extension: ".css" }))
+        .pipe($.changed(config.CompileDir, {
+            extension: ".css"
+        }))
         .pipe($.plumber())
         .pipe($.sass())
         .pipe($.autoprefixer([
@@ -98,7 +108,9 @@ gulp.task("sass", function () {
 gulp.task("jsx", function () {
     return gulp.src(config.SourceDir + "/**/*.jsx")
         .pipe($.plumber())
-        .pipe($.changed(config.CompileDir, { extension: ".js" }))
+        .pipe($.changed(config.CompileDir, {
+            extension: ".js"
+        }))
         .pipe($.react())
         .pipe(gulp.dest(config.CompileDir));
 });
@@ -106,7 +118,9 @@ gulp.task("jsx", function () {
 //compile js
 gulp.task("js", function () {
     return gulp.src(config.SourceDir + "/**/*.js")
-        .pipe($.changed(config.CompileDir, { extension: ".js" }))
+        .pipe($.changed(config.CompileDir, {
+            extension: ".js"
+        }))
         .pipe(gulp.dest(config.CompileDir));
 });
 
@@ -120,7 +134,7 @@ gulp.task("images", function () {
 
 
 //用于生产环境
-gulp.task("deploy", ["delDeploymentDir"], function () {
+gulp.task("deploy", ["delDeploymentDir","dev"], function () {
     return sequence(["imgmin"], ["cssmin"], ["jsmin"], ["htmlmin"]);
 });
 gulp.task("delDeploymentDir", function (cb) {
@@ -140,7 +154,9 @@ gulp.task("cssmin", function () {
         // }))
         .pipe($.css())
         .pipe($.rev())
-        .pipe($.revCollector({ replaceReved: true }))
+        .pipe($.revCollector({
+            replaceReved: true
+        }))
         .pipe(gulp.dest(config.DeploymentDir))
         .pipe($.rev.manifest())
         .pipe(gulp.dest(config.CompileDir + "/version/css"));
@@ -150,8 +166,13 @@ gulp.task("cssmin", function () {
 //压缩html
 gulp.task("htmlmin", function () {
     return gulp.src(config.CompileDir + "/**/*.{html,json}")
-        .pipe($.revCollector({ replaceReved: true }))
-        .pipe($.htmlmin({ collapseWhitespace: true,removeComments:true }))
+        .pipe($.revCollector({
+            replaceReved: true
+        }))
+        .pipe($.htmlmin({
+            collapseWhitespace: true,
+            removeComments: true
+        }))
         .pipe(gulp.dest(config.DeploymentDir));
 });
 
@@ -162,6 +183,7 @@ gulp.task("imgmin", function () {
         .pipe($.imagemin({})) //开发环境用起来太慢 打包生产环境时使用
         .pipe($.rev())
         .pipe(gulp.dest(config.DeploymentDir))
+        // .pipe(upload({qn: qnOptions}))
         .pipe($.rev.manifest())
         .pipe(gulp.dest(config.CompileDir + "/version/images"));
 });
@@ -172,7 +194,9 @@ gulp.task("imgmin", function () {
 gulp.task("jsmin", function () {
     return gulp.src(config.CompileDir + "/**/*.{js,json}")
         .pipe($.plumber())
-        .pipe($.revCollector({ replaceReved: true }))
+        .pipe($.revCollector({
+            replaceReved: true
+        }))
         .pipe($.uglify())
         .pipe($.rev())
         .pipe(gulp.dest(config.DeploymentDir))
@@ -210,16 +234,13 @@ gulp.task("sprite", ["deploy"], function () {
 //gulp include
 
 gulp.task("fileinclude", function () {
-    gulp.src(config.SourceDir +"/**/*.html")
+    gulp.src([config.SourceDir + "/**/*.html","!"+config.SourceDir + "/_**/*.html"])
         .pipe($.fileInclude({
             prefix: '@@',
             basepath: '@file'
         }))
         .pipe(gulp.dest(config.CompileDir));
 });
-
-
-
 // 创建新文章
 gulp.task("new", function () {
     //var reg=/^[\u4e00-\u9fa5]+$/;
@@ -259,8 +280,7 @@ gulp.task("includes", function () {
             }
             if (categorie[post.categories]) {
                 categorie[post.categories]++;
-            }
-            else {
+            } else {
                 categorie[post.categories] = 1;
             }
             // console.log("-------------OK------------");
@@ -282,6 +302,7 @@ gulp.task("pagelist", function () {
             var post = yaml($1);
             post.url = post.date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-");
             pages.push(post);
+           
             hash[post.url] = pages.length - 1;
             // console.log("-------------OK------------");
             // console.log(pages);
@@ -289,43 +310,82 @@ gulp.task("pagelist", function () {
 });
 
 
+gulp.task("posts",["pagelist","buildMD"],function(){
+    
+    var posts = [];
+    pages.sort(function (a, b) {
+        return a.date - b.date;
+    });
+   for(var i=0;i<pages.length;i++)
+   {
+       var post = JSON.parse(JSON.stringify(pages[i]));
+
+       var index = hash[post.url];
+       var next =pages[index + 1];
+       var prev =pages[index - 1];
+         if (typeof (next) == "undefined") {
+               next = {};
+               next.url = "#";
+               next.dis = "disabled";
+            } else {
+                next =  JSON.parse(JSON.stringify(pages[index + 1]));
+                next.dis = "";
+            }
+            if (typeof (prev) == "undefined") {
+                prev = {};
+                prev.url = "#";
+               prev.dis = "disabled";
+            } else {
+               prev =  JSON.parse(JSON.stringify(pages[index - 1]));
+               prev.dis = "";
+            }
+           post.next = next;
+           post.prev = prev;
+             fs.writeFile(config.SourceDir+"/_md2html/"+post.url+".json",JSON.stringify(post),function(err){
+                 if(!err)
+                 {
+                     console.log("ok");
+                 }
+             });
+           posts.push(post);
+         
+   }
+  // console.log(posts);
+   //fs.writeFile(config.SourceDir+"/_md2html/"+"hehe"+".json",JSON.stringify(posts));
+   fs.mkdir(config.SourceDir + "/_md2html", function (){
+       
+          for(var i=0;i<pages.length;i++)
+   {
+       var postfile = fs.readFileSync(config.SourceDir + "/post.html", "utf8");
+      
+       var mark= fs.readFileSync(config.SourceDir+"/_temp/"+pages[i].url+".html","utf8");
+        postfile=  postfile.replace("@@markdown", mark);
+      
+      fs.writeFile(config.SourceDir+"/_md2html/"+pages[i].url+".html",postfile);
+   }
+   });
+});
+
+
 //生成文章静态页
-gulp.task("posts", function () {
+gulp.task("buildMD", function () {
     var post;
     pages.sort(function (a, b) {
-        return  a.date -b.date ;
+        return a.date - b.date;
     });
-   // console.log(pages);
+    // console.log(pages);
     return gulp.src(config.SourceDir + "/**/*.{md,markdown}")
-        .pipe($.debug({ title: "unicorn:" }))
+        .pipe($.debug({
+            title: "unicorn:"
+        }))
         .pipe($.replace(/^([\S\s]+?)[\r\n]+?---[\r\n]/m, function ($0, $1) {
             post = yaml($1);
             post.title = post.title || post.date;
             post.subtitle = post.subtitle || "";
             post.url = post.date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-");
             post.subtitle;
-            var index = hash[post.url];
-            post.next = pages[index + 1];
-            post.prev = pages[index - 1];
-           
-            if (typeof (post.next) == "undefined") {
-                post.next = {};
-                post.next.url = "#";
-                post.next.dis = "disabled";
-            }
-            else {
-                post.next.dis = "";
-            }
-            if (typeof (post.prev) == "undefined") {
-
-                post.prev = {};
-                post.prev.url = "#";
-                post.prev.dis = "disabled";
-            }
-            else {
-                post.prev.dis = "";
-            }
-             console.log(post);
+            // posts.push(post);
+            // debugger;
             return "";
         }))
         .pipe($.replace(/<!--[ \t]*?more[ \t]*?-->/, "<a id=more></a>"))
@@ -336,18 +396,16 @@ gulp.task("posts", function () {
         }))
         .pipe($.replace(/<p>(.*?)<img src(.*?)>([\S\s]*?)<\/p>/gm, "<p class=img>$1<img src$2>$3</p>"))
         .pipe($.replace(/<a href="http(.*?)>"/g, "<a href='http$1' target=_blank>"))
-        .pipe($.htmlExtend({ annotations: true, verbose: false }))
-        .pipe($.data(() => (post)))
-        .pipe($.template())
         .pipe($.flatten())
-        .pipe(gulp.dest(config.SourceDir + "/_md2html/"));
+        .pipe(gulp.dest(config.SourceDir + "/_temp/"));
 });
 
-gulp.task("extend", ["posts"], function () {
-    return gulp.src(config.SourceDir + "/_md2html/**/*.html")
-        // .pipe($.data(() => ({ title: "Sindre" })))
-        // .pipe($.template())
-        .pipe($.flatten())
+gulp.task("extend",["posts"], function () {
+    return gulp.src(config.SourceDir + '/_md2html/*.html')
+        .pipe($.data(function (file) {
+            return require("./"+config.SourceDir+'/_md2html/' + path.basename(file.path,".html") + '.json');
+        }))
+        .pipe($.template())
         .pipe(gulp.dest(config.CompileDir + "/posts"));
 });
 
@@ -364,7 +422,7 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
             result.push(pages.slice(i, i + 5));
         }
         var page = 1;
-        var pagelist =[];
+        var pagelist = [];
         //正统分页
         for (var i = 0; i < result.length; i++) {
             for (var j = 0; j < result[i].length; j++) {
@@ -372,30 +430,45 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
                 for (var k = 0; k < result[i][j].tags.length; k++) {
                     tagsinfo += "<span class='label label-info'>" + result[i][j].tags[k] + "</span>";
                 }
-                var url ="/posts/"+ result[i][j].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-")+".html";
-                               pagelist.push({
-                                   url:  url  ,
-                                   tags:tagsinfo,
-                                   title:result[i][j].title,
-                                   small:result[i][j].subtitle,
-                                   date:moment(result[i][j].date).utc().format("YYYY-MM-DD"),
-                                   outline: result[i][j].outline });
+                var url = "/posts/" + result[i][j].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-") + ".html";
+                pagelist.push({
+                    url: url,
+                    tags: tagsinfo,
+                    title: result[i][j].title,
+                    small: result[i][j].subtitle,
+                    date: moment(result[i][j].date).utc().format("YYYY-MM-DD"),
+                    outline: result[i][j].outline
+                });
+
             }
-            fs.writeFile(config.SourceDir + "/_includes/list.json", JSON.stringify(pagelist));
-           // fs.writeFile(config.SourceDir + "/pagelist/list" + page + ".html", pagelisthtml);
-            pagelisthtml = "";
+            if (page == 1) {
+                fs.writeFile(config.SourceDir + "/_includes/list.json", JSON.stringify(pagelist));
+            } else {
+                var file = fs.readFileSync(config.SourceDir + "/index.html", "utf8");
+                const str = "@@loop('_includes/list.html', \"_includes/list.json\")";
+                var str2 = "@@loop('_includes/list.html', \"_includes/list" + page + ".json\")";
+                const str3 = "";
+                const str4 = "'../_includes/";
+                file = file.replace(str, str2);
+                file = file.replace(/'_includes\//g, str4);
+                fs.writeFile(config.SourceDir + "/_includes/list" + page + ".json", JSON.stringify(pagelist));
+                fs.writeFile(config.SourceDir + "/pagelist/page" + page + ".html", file);
+
+            }
+
+            pagelist.length = 0;
             page++;
         }
 
         var tagpages = [];
+        pagelist.length = 0;
         for (var tag in tags) {
             for (var paga in pages) {
                 if (pages[paga].tags.indexOf(tag) > -1) {
                     tagpages.push(pages[paga]);
                 }
             }
-            // console.log("------------------"+tag+"------------------");
-            // console.log(tagpages);
+
             result.length = 0;
             page = 1;
             for (var i = 0, len = tagpages.length; i < len; i += 5) {
@@ -408,20 +481,29 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
                     for (var k = 0; k < result[i][j].tags.length; k++) {
                         tagsinfo += "<span class='label label-info'>" + result[i][j].tags[k] + "</span>";
                     }
-                    var url = result[i][j].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-");
-                    pagelisthtml += " <div class='content-block'> \
-                            <div class='content-heading'>   \
-                                <h2 class='title'>"+ result[i][j].title + "<small>" + result[i][j].subtitle + "</small></h2> \
-                                <div class='date'>"+ moment(result[i][j].date).utc().format("YYYY-MM-DD") + "</div>  \
-                            </div>  \
-                            <div class='content-body'>  \
-                                <p>"+ result[i][j].outline + "</p> \
-                            </div> \
-                           <div class='content-footer'> "+ tagsinfo + "<a href='/posts/" + url + ".html' class='read'>阅读全文</a> <div class='clear'></div> \
-                            </div> </div>";
+                    var url = "/posts/" + result[i][j].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-") + ".html";
+                    pagelist.push({
+                        url: url,
+                        tags: tagsinfo,
+                        title: result[i][j].title,
+                        small: result[i][j].subtitle,
+                        date: moment(result[i][j].date).utc().format("YYYY-MM-DD"),
+                        outline: result[i][j].outline
+                    });
                 }
-                fs.writeFile(config.SourceDir + "/pagelist/" + tag + "list" + page + ".html", pagelisthtml);
-                pagelisthtml = "";
+
+                var file = fs.readFileSync(config.SourceDir + "/index.html", "utf8");
+                const str = "@@loop('_includes/list.html', \"_includes/list.json\")";
+                var str2 = "@@loop('_includes/list.html', \"_includes/" + tag + "list" + page + ".json\")";
+                const str4 = "'../_includes/";
+                const str3 = "@@loop('_includes/pagination.html',\"_includes/pagination.json\")"
+                const str5 = "@@loop('_includes/pagination.html',\"_includes/"+tag+"pagination.json\")"
+                file = file.replace(str, str2);
+                file = file.replace(str3,str5);
+                file = file.replace(/'_includes\//g, str4);
+                fs.writeFile(config.SourceDir + "/_includes/" + tag + "list" + page + ".json", JSON.stringify(pagelist));
+                fs.writeFile(config.SourceDir + "/pagelist/" + tag + "page" + page + ".html", file);
+                pagelist.length = 0;
                 page++;
             }
             tagpages.length = 0;
@@ -437,8 +519,6 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
                     categoriepages.push(pages[paga]);
                 }
             }
-            // console.log("------------------"+cat+"------------------");
-            // console.log(categoriepages);
             result.length = 0;
             page = 1;
             for (var i = 0, len = categoriepages.length; i < len; i += 5) {
@@ -447,26 +527,37 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
             //根据频道分页
             for (var i = 0; i < result.length; i++) {
                 for (var j = 0; j < result[i].length; j++) {
-                    var url = result[i][j].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-");
-                    // <span class="label label-info">人生感想</span><span class="label label-info">Info</span>
+
+
                     var tagsinfo = "";
                     for (var k = 0; k < result[i][j].tags.length; k++) {
                         tagsinfo += "<span class='label label-info'>" + result[i][j].tags[k] + "</span>";
                     }
-                    // console.log(tagsinfo);
-                    pagelisthtml += " <div class='content-block'> \
-                            <div class='content-heading'>   \
-                                <h2 class='title'>"+ result[i][j].title + "<small>" + result[i][j].subtitle + "</small></h2> \
-                                <div class='date'>"+ moment(result[i][j].date).utc().format("YYYY-MM-DD") + "</div>  \
-                            </div>  \
-                            <div class='content-body'>  \
-                                <p>"+ result[i][j].outline + "</p> \
-                            </div> \
-                            <div class='content-footer'> "+ tagsinfo + "<a href='/posts/" + url + ".html' class='read'>阅读全文</a> <div class='clear'></div> \
-                            </div> </div>";
+                    var url = "/posts/" + result[i][j].date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-") + ".html";
+                  
+                    pagelist.push({
+                        url: url,
+                        tags: tagsinfo,
+                        title: result[i][j].title,
+                        small: result[i][j].subtitle,
+                        date: moment(result[i][j].date).utc().format("YYYY-MM-DD"),
+                        outline: result[i][j].outline
+                    });
                 }
-                fs.writeFile(config.SourceDir + "/pagelist/" + cat + "list" + page + ".html", pagelisthtml);
-                pagelisthtml = "";
+      
+                var file = fs.readFileSync(config.SourceDir + "/index.html", "utf8");
+                const str = "@@loop('_includes/list.html', \"_includes/list.json\")";
+                var str2 = "@@loop('_includes/list.html', \"_includes/" + cat + "list" + page + ".json\")";
+                const str3 = "@@loop('_includes/pagination.html',\"_includes/pagination.json\")"
+                const str4 = "'../_includes/";
+                const str5 = "@@loop('_includes/pagination.html',\"_includes/"+cat+"pagination.json\")"
+                file = file.replace(str, str2);
+                file = file.replace(str3,str5);
+                file = file.replace(/'_includes\//g, str4);
+                // console.log(file);
+                fs.writeFile(config.SourceDir + "/_includes/" + cat + "list" + page + ".json", JSON.stringify(pagelist));
+                fs.writeFile(config.SourceDir + "/pagelist/" + cat + "page" + page + ".html", file);
+                pagelist.length = 0;
                 page++;
             }
             categoriepages.length = 0;
@@ -477,70 +568,91 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
 
 gulp.task("publish", ["includes"], function () {
 
-    return fs.mkdir(config.SourceDir + "/includes", function () {
+    return fs.mkdir(config.SourceDir + "/_includes", function () {
 
-       // JSON.stringify
 
         //生成分页按钮
         var paginationhtml = "";
-        var pageinations=[];
+        var pageinations = [];
         var page = Math.ceil(newarticlelist.length / 5);
-        for (var p = 1; p <= page; p++) {  //  <li><a ng-click="$parent.list = '/pagelist/list1.html'" href="#pagelist/list1.html">1</a></li>
+        for (var p = 1; p <= page; p++) {
             if (page == 1) {
+                break;
+            }
+
+            if (p == 1) {
+                pageinations.push({
+                    url: "/index.html",
+                    page: p
+                });
                 continue;
             }
-            pageinations.unshift({page:p});
-            paginationhtml += "  <li><a ng-click='list = \"/pagelist/list" + p + ".html\"' href='#pagelist/list" + p + ".html'>" + p + "</a></li>";
-            
+            pageinations.push({
+                url: "/pagelist/page" + p + ".html",
+                page: p
+            });
         }
-        fs.writeFile(config.SourceDir + "/includes/pagination.html", paginationhtml);
+        fs.writeFile(config.SourceDir + "/_includes/pagination.json", JSON.stringify(pageinations));
+
 
         //生成分类分页按钮
         var categoriepages = [];
+        pageinations.length = 0;
         for (var cat in categorie) {
-            paginationhtml = "";
+
+            //paginationhtml = "";
             for (var art in newarticlelist) {
                 if (newarticlelist[art].categories.indexOf(cat) > -1) {
                     categoriepages.push(newarticlelist[art]);
                 }
             }
             page = Math.ceil(categoriepages.length / 5);
-            for (var p = 1; p <= page; p++) {  //  <li><a ng-click="$parent.list = '/pagelist/list1.html'" href="#pagelist/list1.html">1</a></li>
+            for (var p = 1; p <= page; p++) {
+
                 if (page == 1) {
-                    continue;
+                    break;
                 }
-                paginationhtml += "  <li><a ng-click='list = \"/pagelist/" + cat + "list" + p + ".html\"' href='#pagelist/" + cat + "list" + p + ".html'>" + p + "</a></li>";
+                pageinations.push({
+                    url: "/pagelist/" + cat + "page" + p + ".html",
+                    page: p
+                });
             }
-            fs.writeFile(config.SourceDir + "/includes/" + cat + "pagination.html", paginationhtml);
+            fs.writeFile(config.SourceDir + "/_includes/" + cat + "pagination.json", JSON.stringify(pageinations));
             categoriepages.length = 0;
         }
         //生成标签分页按钮
         var tagspages = [];
+        pageinations.length = 0;
         for (var tag in tags) {
-            paginationhtml = "";
             for (var art in newarticlelist) {
                 if (newarticlelist[art].tags.indexOf(tag) > -1) {
                     tagspages.push(newarticlelist[art]);
                 }
             }
             page = Math.ceil(tagspages.length / 5);
-            for (var p = 1; p <= page; p++) {  //  <li><a ng-click="$parent.list = '/pagelist/list1.html'" href="#pagelist/list1.html">1</a></li>
+            for (var p = 1; p <= page; p++) {
                 if (page == 1) {
-                    continue;
+                    break;
                 }
-                paginationhtml += "  <li><a ng-click='list = \"/pagelist/" + tag + "list" + p + ".html\"' href='#pagelist/" + tag + "list" + p + ".html'>" + p + "</a></li>";
+                pageinations.push({
+                    url: "/pagelist/" + tag + "page" + p + ".html",
+                    page: p
+                });
             }
-            fs.writeFile(config.SourceDir + "/includes/" + tag + "pagination.html", paginationhtml);
+            fs.writeFile(config.SourceDir + "/_includes/" + tag + "pagination.json", JSON.stringify(pageinations));
             tagspages.length = 0;
         }
 
-       //生成栏目
-       // var categoriehtml = "";
-        var cats= [];
+        //生成栏目
+        var cats = [];
         for (var s in categorie) {
-            var cat ={catname : s,postcount:categorie[s]};
-            cats.unshift(cat);
-           // categoriehtml += "<p><a href=#" + s + " ng-click='[list=\"/pagelist/" + s + "list1.html\",pagination=\"includes/" + s + "pagination.html\"]'>" + s + "<span  class='badge'>" + categorie[s] + "</span>" + "</a></p>";
+            var cat = {
+                catname: s,
+                postcount: categorie[s],
+                url:"/pagelist/"+s+"page1.html"
+            };
+          
+            cats.push(cat);
         }
         newarticlelist.sort(function (a, b) {
             return b.date - a.date;
@@ -548,23 +660,26 @@ gulp.task("publish", ["includes"], function () {
 
         //生成最新文章链接
         newarticlelist.length = 10;
-        var newarticlelisthtml = "";
-        var news =[];
+        var newarticlelisthtml = "";        var news = [];
         for (var o in newarticlelist) {
-            news.unshift({url:"/posts/" + newarticlelist[o].url,title:newarticlelist[o].title,date:newarticlelist[o].date});
+            news.push({
+                url: "/posts/" + newarticlelist[o].url,
+                title: newarticlelist[o].title,
+                date: newarticlelist[o].date
+            });
         }
-        news.sort(function (a, b) {
-            return b.date - a.date;
-        });
 
         //生成标签云
-        var tagshtml = "";
         var tagjson = [];
         for (var tag in tags) {
             var index = Math.floor((Math.random() * "sml".length));
-            tagjson.unshift({index:index,tag:tag});
+            tagjson.push({
+                index:"sml"[index],
+                tag: tag,
+                url:"/pagelist/"+tag+"page1.html"
+            });
         }
-        fs.writeFile(config.SourceDir+"/_includes/categories.json", JSON.stringify(cats));
+        fs.writeFile(config.SourceDir + "/_includes/categories.json", JSON.stringify(cats));
         fs.writeFile(config.SourceDir + "/_includes/newarticlelist.json", JSON.stringify(news));
         fs.writeFile(config.SourceDir + "/_includes/tags.json", JSON.stringify(tagjson));
     });
