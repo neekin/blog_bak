@@ -45,7 +45,5 @@
     "moment": "^2.14.1",
     "run-sequence": "^1.2.2"
   },
-  "dependencies": {
-    "markdown": "^0.5.0"
-  }
+  "dependencies": {}
 }

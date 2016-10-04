@@ -8,7 +8,6 @@ var sequence = require("run-sequence");
 var fs = require("fs");
 var moment = require("moment");
 var highlight = require("highlight.js").highlightAuto;
-var markdown = require("markdown");
 var config = {
     CompileDir: "build", //开发编译目录
     SourceDir: "src", //源码目录
