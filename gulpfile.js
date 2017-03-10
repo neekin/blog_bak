@@ -13,18 +13,21 @@ var config = {
     SourceDir: "src", //源码目录
     DeploymentDir: "production" //编译到生产目录
 };
+
+
+
 var path = require("path");
 
 
 //默认开发模式
-gulp.task("default", ["dev"], function (cb) {
+gulp.task("default", ["dev"], function(cb) {
     return sequence(["serve", "watch"], cb);
 });
 
-gulp.task("clean", function () {
+gulp.task("clean", function() {
     return del([config.CompileDir, config.DeploymentDir, config.SourceDir + "/_md2html/*.*", config.SourceDir + "/includes/*.*", config.SourceDir + "/pagelist/*.*", config.SourceDir + "posts/*.*"]);
 });
-gulp.task("serve", function () {
+gulp.task("serve", function() {
     return browserSync.init({
         server: {
             baseDir: config.CompileDir
@@ -34,31 +37,31 @@ gulp.task("serve", function () {
     });
 });
 
-gulp.task("dev", ["delCompileDir", "publishpagelist"], function (cb) {
+gulp.task("dev", ["delCompileDir", "publishpagelist"], function(cb) {
     return sequence("html", "pug", "fileinclude", "sass", "js", "images", "jsx", "extend", cb);
 });
 
 
 
-gulp.task("delCompileDir", function (cb) {
+gulp.task("delCompileDir", function(cb) {
     return del([config.CompileDir], cb);
 });
 
-gulp.task("reload", function (cb) {
+gulp.task("reload", function(cb) {
     return sequence(["dev"], ["reload-browser"], cb);
 });
 
-gulp.task("reload-browser", function () {
+gulp.task("reload-browser", function() {
     return browserSync.reload();
 });
 
-gulp.task("watch", function () {
+gulp.task("watch", function() {
     return gulp.watch([config.SourceDir + "/**/*.*", "!" + config.SourceDir + "/_**/*.*"], ["reload"]);
 });
 
 
 //compile jade
-gulp.task("pug", function () {
+gulp.task("pug", function() {
     return gulp.src([config.SourceDir + "/**/*.{jade,pug}", "!" + config.SourceDir + "/_**/*.*"])
         .pipe($.plumber())
         .pipe($.changed(config.CompileDir, {
@@ -73,13 +76,13 @@ gulp.task("pug", function () {
 });
 
 //compile html
-gulp.task("html", function () {
+gulp.task("html", function() {
     return gulp.src([config.SourceDir + "/**/*.{html,json}", "!" + config.SourceDir + "/_**/*.{html,json}"])
         .pipe(gulp.dest(config.CompileDir));
 });
 
 //compile sass
-gulp.task("sass", function () {
+gulp.task("sass", function() {
     return gulp.src([config.SourceDir + "/**/*.{css,scss}", "!" + config.SourceDir + "/_**/_*.*"])
         .pipe($.plumber())
         .pipe($.changed(config.CompileDir, {
@@ -104,7 +107,7 @@ gulp.task("sass", function () {
 });
 
 //compile jsx
-gulp.task("jsx", function () {
+gulp.task("jsx", function() {
     return gulp.src(config.SourceDir + "/**/*.jsx")
         .pipe($.plumber())
         .pipe($.changed(config.CompileDir, {
@@ -115,7 +118,7 @@ gulp.task("jsx", function () {
 });
 
 //compile js
-gulp.task("js", function () {
+gulp.task("js", function() {
     return gulp.src(config.SourceDir + "/**/*.js")
         .pipe($.changed(config.CompileDir, {
             extension: ".js"
@@ -124,7 +127,7 @@ gulp.task("js", function () {
 });
 
 //images
-gulp.task("images", function () {
+gulp.task("images", function() {
     return gulp.src(config.SourceDir + "/**/*.{png,jpg,gif,svg}")
         .pipe($.plumber())
         .pipe($.changed(config.CompileDir))
@@ -133,16 +136,16 @@ gulp.task("images", function () {
 
 
 //用于生产环境
-gulp.task("deploy", ["delDeploymentDir", "dev"], function () {
+gulp.task("deploy", ["delDeploymentDir", "dev"], function() {
     return sequence(["imgmin"], ["cssmin"], ["jsmin"], ["htmlmin"]);
 });
-gulp.task("delDeploymentDir", function (cb) {
+gulp.task("delDeploymentDir", function(cb) {
     return del([config.DeploymentDir], cb);
 });
 
 
 //压缩css
-gulp.task("cssmin", function () {
+gulp.task("cssmin", function() {
     return gulp.src(config.CompileDir + "/**/*.{css,json}")
         // .pipe($.base64({
         //     baseDir: config.CompileDir,
@@ -163,7 +166,7 @@ gulp.task("cssmin", function () {
 
 
 //压缩html
-gulp.task("htmlmin", function () {
+gulp.task("htmlmin", function() {
     return gulp.src(config.CompileDir + "/**/*.{html,json}")
         .pipe($.revCollector({
             replaceReved: true
@@ -177,12 +180,13 @@ gulp.task("htmlmin", function () {
 
 
 //压缩图片
-gulp.task("imgmin", function () {
+gulp.task("imgmin", function() {
     return gulp.src(config.CompileDir + "/**/*.{png,jpg,gif,svg}")
         .pipe($.imagemin({})) //开发环境用起来太慢 打包生产环境时使用
         .pipe($.rev())
+        // .pipe($.rename({ suffix: '.min' }))
         .pipe(gulp.dest(config.DeploymentDir))
-        // .pipe(upload({qn: qnOptions}))
+        // .pipe($.qndn.upload({ qn: qnOptions }))
         .pipe($.rev.manifest())
         .pipe(gulp.dest(config.CompileDir + "/version/images"));
 });
@@ -190,7 +194,7 @@ gulp.task("imgmin", function () {
 
 //压缩js
 
-gulp.task("jsmin", function () {
+gulp.task("jsmin", function() {
     return gulp.src(config.CompileDir + "/**/*.{js,json}")
         .pipe($.plumber())
         .pipe($.revCollector({
@@ -204,7 +208,7 @@ gulp.task("jsmin", function () {
 });
 
 //雪碧图
-gulp.task("sprite", ["deploy"], function () {
+gulp.task("sprite", ["deploy"], function() {
     // return gulp.src(config.CompileDir + "/**/*.css")
     //     // .pipe($.cssSpriter({
     //     //     // 生成的spriter的位置
@@ -232,7 +236,7 @@ gulp.task("sprite", ["deploy"], function () {
 
 //gulp include
 
-gulp.task("fileinclude", function () {
+gulp.task("fileinclude", function() {
     gulp.src([config.SourceDir + "/**/*.html", "!" + config.SourceDir + "/_**/*.html"])
         .pipe($.fileInclude({
             prefix: '@@',
@@ -241,7 +245,7 @@ gulp.task("fileinclude", function () {
         .pipe(gulp.dest(config.CompileDir));
 });
 // 创建新文章
-gulp.task("new", function () {
+gulp.task("new", function() {
     //var reg=/^[\u4e00-\u9fa5]+$/;
     //  var title  = "";
     // if(reg.test(gulp.env["title"]))
@@ -266,9 +270,9 @@ gulp.task("new", function () {
 var categorie = {};
 var newarticlelist = [];
 var tags = {};
-gulp.task("includes", function () {
+gulp.task("includes", function() {
     return gulp.src(config.SourceDir + "/**/*.{md,markdown}")
-        .pipe($.replace(/^([\S\s]+?)[\r\n]+?---[\r\n]/m, function ($0, $1) {
+        .pipe($.replace(/^([\S\s]+?)[\r\n]+?---[\r\n]/m, function($0, $1) {
             var post = yaml($1);
             post.url = post.date.toISOString().replace(/(.+)T(.+)\..+/, "$1 $2").replace(/[: ]/g, "-") + ".html";
             newarticlelist.push(post);
@@ -292,10 +296,10 @@ gulp.task("includes", function () {
 //生成列表
 var pages;
 var hash = {};
-gulp.task("pagelist", function () {
+gulp.task("pagelist", function() {
     pages = [];
     return gulp.src(config.SourceDir + "/**/*.{md,markdown}")
-        .pipe($.replace(/^([\S\s]+?)[\r\n]+?---[\r\n]/m, function ($0, $1) {
+        .pipe($.replace(/^([\S\s]+?)[\r\n]+?---[\r\n]/m, function($0, $1) {
 
             // console.log($1);
             var post = yaml($1);
@@ -309,10 +313,10 @@ gulp.task("pagelist", function () {
 });
 
 
-gulp.task("posts", ["pagelist", "buildMD"], function () {
+gulp.task("posts", ["pagelist", "buildMD"], function() {
 
     var posts = [];
-    pages.sort(function (a, b) {
+    pages.sort(function(a, b) {
         return a.date - b.date;
     });
     for (var i = 0; i < pages.length; i++) {
@@ -321,7 +325,7 @@ gulp.task("posts", ["pagelist", "buildMD"], function () {
         var index = hash[post.url];
         var next = pages[index + 1];
         var prev = pages[index - 1];
-        if (typeof (next) == "undefined") {
+        if (typeof(next) == "undefined") {
             next = {};
             next.url = "#";
             next.dis = "disabled";
@@ -329,7 +333,7 @@ gulp.task("posts", ["pagelist", "buildMD"], function () {
             next = JSON.parse(JSON.stringify(pages[index + 1]));
             next.dis = "";
         }
-        if (typeof (prev) == "undefined") {
+        if (typeof(prev) == "undefined") {
             prev = {};
             prev.url = "#";
             prev.dis = "disabled";
@@ -339,7 +343,7 @@ gulp.task("posts", ["pagelist", "buildMD"], function () {
         }
         post.next = next;
         post.prev = prev;
-        fs.writeFile(config.SourceDir + "/_md2html/" + post.url + ".json", JSON.stringify(post), function (err) {
+        fs.writeFile(config.SourceDir + "/_md2html/" + post.url + ".json", JSON.stringify(post), function(err) {
             if (!err) {
                 console.log("ok");
             }
@@ -349,7 +353,7 @@ gulp.task("posts", ["pagelist", "buildMD"], function () {
     }
     // console.log(posts);
     //fs.writeFile(config.SourceDir+"/_md2html/"+"hehe"+".json",JSON.stringify(posts));
-    fs.mkdir(config.SourceDir + "/_md2html", function () {
+    fs.mkdir(config.SourceDir + "/_md2html", function() {
 
         for (var i = 0; i < pages.length; i++) {
             var postfile = fs.readFileSync(config.SourceDir + "/post.html", "utf8");
@@ -364,9 +368,9 @@ gulp.task("posts", ["pagelist", "buildMD"], function () {
 
 
 //生成文章静态页
-gulp.task("buildMD", function () {
+gulp.task("buildMD", function() {
     var post;
-    pages.sort(function (a, b) {
+    pages.sort(function(a, b) {
         return a.date - b.date;
     });
     // console.log(pages);
@@ -374,7 +378,7 @@ gulp.task("buildMD", function () {
         .pipe($.debug({
             title: "unicorn:"
         }))
-        .pipe($.replace(/^([\S\s]+?)[\r\n]+?---[\r\n]/m, function ($0, $1) {
+        .pipe($.replace(/^([\S\s]+?)[\r\n]+?---[\r\n]/m, function($0, $1) {
             post = yaml($1);
             post.title = post.title || post.date;
             post.subtitle = post.subtitle || "";
@@ -386,7 +390,7 @@ gulp.task("buildMD", function () {
         }))
         .pipe($.replace(/<!--[ \t]*?more[ \t]*?-->/, "<a id=more></a>"))
         .pipe($.marked({
-            highlight: function (code) {
+            highlight: function(code) {
                 return highlight(code).value;
             }
         }))
@@ -396,9 +400,9 @@ gulp.task("buildMD", function () {
         .pipe(gulp.dest(config.SourceDir + "/_temp/"));
 });
 
-gulp.task("extend", ["posts"], function () {
+gulp.task("extend", ["posts"], function() {
     return gulp.src(config.SourceDir + '/_md2html/*.html')
-        .pipe($.data(function (file) {
+        .pipe($.data(function(file) {
             return require("./" + config.SourceDir + '/_md2html/' + path.basename(file.path, ".html") + '.json');
         }))
         .pipe($.template())
@@ -407,11 +411,11 @@ gulp.task("extend", ["posts"], function () {
 
 
 //生成文章列表页
-gulp.task("publishpagelist", ["pagelist", "publish"], function () {
-    return fs.mkdir(config.SourceDir + "/pagelist", function () {
+gulp.task("publishpagelist", ["pagelist", "publish"], function() {
+    return fs.mkdir(config.SourceDir + "/pagelist", function() {
         var pagelisthtml = "";
         var result = [];
-        pages.sort(function (a, b) {
+        pages.sort(function(a, b) {
             return b.date - a.date;
         });
         for (var i = 0, len = pages.length; i < len; i += 5) {
@@ -562,9 +566,9 @@ gulp.task("publishpagelist", ["pagelist", "publish"], function () {
     });
 });
 
-gulp.task("publish", ["includes"], function () {
+gulp.task("publish", ["includes"], function() {
 
-    return fs.mkdir(config.SourceDir + "/_includes", function () {
+    return fs.mkdir(config.SourceDir + "/_includes", function() {
 
 
         //生成分页按钮
@@ -650,7 +654,7 @@ gulp.task("publish", ["includes"], function () {
 
             cats.push(cat);
         }
-        newarticlelist.sort(function (a, b) {
+        newarticlelist.sort(function(a, b) {
             return b.date - a.date;
         });
 
