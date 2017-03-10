@@ -252,7 +252,7 @@ gulp.task("new", function() {
     var title = gulp.env["title"] || "new";
     var tags = gulp.env["tags"] || "未添加标签";
     var categories = gulp.env["categories"] || "未添加分类";
-    var now = (new Date()).toISOString().replace(/(.+)T(.+)\..+/, "$1 $2");
+    var now = new Date(+new Date() + 8 * 3600 * 1000).toISOString().replace(/(.+)T(.+)\..+/, "$1 $2");
     var subtitle = gulp.env["subtitle"] || "";
     var outline = gulp.env["outline"] || "";
     return gulp.src("empty.md")
