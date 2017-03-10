@@ -1,0 +1,1 @@
+module.exports=function(a){var e=a.COMMENT(/\(\*/,/\*\)/);return{illegal:/\S/,contains:[e,{className:"attribute",begin:/^[ ]*[a-zA-Z][a-zA-Z-]*([\s-]+[a-zA-Z][a-zA-Z]*)*/},{begin:/=/,end:/;/,contains:[e,{className:"meta",begin:/\?.*\?/},a.APOS_STRING_MODE,a.QUOTE_STRING_MODE]}]}};
