@@ -1,1 +1,0 @@
-module.exports=function(e){return{contains:[{className:"meta",begin:/^([\w.-]+|\s*#_)=>/,starts:{end:/$/,subLanguage:"clojure"}}]}};
