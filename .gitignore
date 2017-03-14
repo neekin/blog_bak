@@ -9,3 +9,4 @@ node_modules
 /production
 _temp
 /src/_includes/*.json
+.DS_Store
