@@ -9,10 +9,6 @@ body {
     height: 100%;
 }
 
-article.content {
-    padding: 40px 80px;
-}
-
 .wrapper {
     position: relative;
     min-height: 100%;
@@ -20,7 +16,7 @@ article.content {
 }
 
 .main {
-    padding: 0 0 120px;
+    padding-bottom: 120px;
     zoom: 1;
 }
 
@@ -167,10 +163,8 @@ article.content {
         min-height: 450px;
         font-size: 16px;
         // background: #fafafa;
-        .img {
-            img {
-                width: 100%;
-            }
+        img {
+            width: 100%;
         }
         p {
             text-indent: 2em;

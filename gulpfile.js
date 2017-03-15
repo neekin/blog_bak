@@ -394,7 +394,7 @@ gulp.task("buildMD", function() {
                 return highlight(code).value;
             }
         }))
-        .pipe($.replace(/<p>(.*?)<img src(.*?)>([\S\s]*?)<\/p>/gm, "<p class=img>$1<img src$2>$3</p>"))
+        .pipe($.replace(/<p>(.*?)<img src(.*?)>([\S\s]*?)<\/p>/gm, "$1<img src$2>$3"))
         .pipe($.replace(/<a href="http(.*?)>"/g, "<a href='http$1' target=_blank>"))
         .pipe($.flatten())
         .pipe(gulp.dest(config.SourceDir + "/_temp/"));

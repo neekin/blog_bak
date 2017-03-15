@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>
         <%= title%> - 随趣IT - 趣味人生
     </title>
@@ -37,7 +37,7 @@
             <div class="row">
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <article class="content">
-                      @@markdown
+                        @@markdown
                     </article>
                 </div>
             </div>
@@ -45,14 +45,14 @@
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <nav>
                         <ul class="pager">
-                            <li class="previous <%= next.dis  %>"><a href= "<%= next.url%>.html">&larr;后一篇</a></li>
-                            <li class="next   <%= prev.dis %>"><a href= "<%= prev.url%>.html">  前一篇 &rarr;</a></li>
+                            <li class="previous <%= next.dis  %>"><a href="<%= next.url%>.html">&larr;后一篇</a></li>
+                            <li class="next   <%= prev.dis %>"><a href="<%= prev.url%>.html">  前一篇 &rarr;</a></li>
                         </ul>
                     </nav>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="col-md-12 col-sm-12 col-xs-12 duoshuo">
                     <!-- 多说评论框 start -->
                     <div class="ds-thread" data-thread-key="<%= url %>" data-title="<%= title%>" data-url="http://justfunit.com/posts/<%= url%>.html"></div>
                     <!-- 多说评论框 end -->
