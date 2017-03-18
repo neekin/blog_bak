@@ -1,5 +1,5 @@
 var _hmt = _hmt || [];
-(function () {
+(function() {
     var links = document.getElementsByTagName('link');
     for (i = 0; i < links.length; i++) {
         if (links[i].rel = 'load') {

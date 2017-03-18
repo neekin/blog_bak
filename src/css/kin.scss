@@ -16,51 +16,58 @@ body {
 }
 
 .main {
-    padding-bottom: 120px;
+    padding-bottom: 6rem;
     zoom: 1;
 }
 
 .header {
     background: $body-color;
-    height: 70px;
-    margin-bottom: 10px;
+    height: 3.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .content-block {
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16);
     transition: box-shadow 0.5s ease;
-    margin-bottom: 20px;
+    margin-bottom: 1rem;
     &:hover {
         box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
     }
     .content-heading {
         background: $body-color;
-        padding: 10px;
+        padding: 0.5rem;
         color: #fff;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
         .title {
-            display: inline-block;
+            flex: 8;
+            // display: inline-block;
             small {
                 color: #fafafa;
             }
         }
         .date {
-            display: block;
-            float: right;
-            line-height: 70px;
-            margin-right: 10px;
+            flex: 3;
+            text-align: right;
+            justify-content: center;
+            // display: block;
+            // float: right;
+            // line-height: 3.5rem;
+            // margin-right: 0.5rem;
         }
     }
     .content-body {
-        padding: 20px;
+        padding: 1rem;
     }
     a {
         text-decoration: none;
     }
     .content-footer {
-        padding: 10px;
+        padding: 0.5rem;
         // text-align: right;
         .label {
-            margin-left: 10px;
+            margin-left: 0.5rem;
         }
         .read {
             float: right;
@@ -73,9 +80,9 @@ body {
 
 .footer {
     background: #ddd;
-    height: 120px;
+    height: 6rem;
     // line-height: 120px;
-    margin: -120px 0 0;
+    margin: -6rem 0 0;
     color: #fff;
     a {
         text-decoration: none;
@@ -90,31 +97,31 @@ body {
         text-align: left;
         .social-icon {
             display: inline-block;
-            margin-left: 10px;
-            font-size: 28px;
+            margin-left: 0.5rem;
+            font-size: 0.8rem;
         }
-        .weixin {
-            position: relative;
-            &:hover {
-                .qrcode {
-                    display: block;
-                }
-            }
-        }
-        .qrcode {
-            height: 400px;
-            width: 400px;
-            background: #0094ff;
-            position: absolute;
-            top: -420px;
-            z-index: 9999;
-            left: -200px;
-            display: none;
-            img {
-                height: 100%;
-                width: 100%;
-            }
-        }
+        // .weixin {
+        //     position: relative;
+        //     &:hover {
+        //         .qrcode {
+        //             display: block;
+        //         }
+        //     }
+        // }
+        // .qrcode {
+        //     height: 10rem;
+        //     width: 10rem;
+        //     background: #0094ff;
+        //     position: absolute;
+        //     top: -10rem;
+        //     z-index: 9999;
+        //     left: 0;
+        //     display: none;
+        //     img {
+        //         height: 100%;
+        //         width: 100%;
+        //     }
+        // }
     }
     .links {
         text-align: left;
@@ -124,8 +131,8 @@ body {
             text-align: left;
         }
         .social-link {
-            font-size: 16px;
-            padding-right: 10px;
+            font-size: 0.4rem;
+            padding-right: 0.5rem;
         }
     }
     .copy {
@@ -147,29 +154,46 @@ body {
 .post {
     .header {
         background: $body-color;
-        height: 120px;
-        margin-bottom: 10px;
-        padding-top: 20px;
+        height: 6rem;
+        margin-bottom: 0.5rem;
+        padding-top: 1rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
         .logo {
+            flex: 3;
             a {
                 color: #fff;
                 text-decoration: none;
+                font-size: 1rem;
             }
-            position: absolute;
-            font-size: 26px;
+        }
+        .title {
+            flex: 9;
+            h1 {
+                font-size: 1.4rem;
+            }
+            h4 {
+                font-size: 1rem;
+            }
         }
     }
     .content {
-        min-height: 450px;
-        font-size: 16px;
+        padding: 1rem;
+        min-height: 22.5rem;
+        // font-size: 0.6rem;
         // background: #fafafa;
         img {
             width: 100%;
         }
         p {
-            text-indent: 2em;
+            text-indent: 1rem;
+        }
+        h3 {
+            font-size: 1.1rem;
         }
         video {
+            width: 100%;
             margin: 0 auto;
         }
     }
@@ -199,25 +223,25 @@ body {
 
 .logo {
     margin: 0;
-    line-height: 70px;
+    line-height: 3.5rem;
     color: #fff;
-    padding-left: 20px;
+    padding-left: 1rem;
 }
 
 .tags {
     color: $body-color;
     line-height: 1.6em;
     span {
-        padding: 4px;
+        padding: 0.2rem;
     }
     .s {
-        font-size: 0.8em;
+        font-size: 0.4rem;
     }
     .m {
-        font-size: 1.2em;
+        font-size: 0.8rem;
     }
     .l {
-        font-size: 1.8em;
+        font-size: 1rem;
     }
 }
 
